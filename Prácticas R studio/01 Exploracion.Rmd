@@ -94,13 +94,13 @@ cat("Filas originales:", nrow(data.vg), "\n\n")
 # Método 1: na.omit() - Elimina filas con cualquier NA
 df_sin_na <- na.omit(data.vg)
 print("Con na.omit():")
-print(df_sin_na)
+print(head(df_sin_na))
 cat("Filas después de na.omit():", nrow(df_sin_na), "\n\n")
 
 # Método 2: complete.cases() - Más control
 df_completo <- data.vg[complete.cases(data.vg), ]
 print("Con complete.cases():")
-print(df_completo)
+print(head(df_completo))
 cat("Filas después de complete.cases():", nrow(df_completo), "\n")
 
 ```
@@ -135,7 +135,7 @@ df <- filter(data.vg,NA_Sales<2.5)
 # Histograma agrupado por categoría
 ggplot( df , aes(x = NA_Sales)) +
   geom_histogram(position = "dodge", alpha = 0.7, bins = 20) +
-  labs(title = "Histograma Agrupado de Ventas por Año",
+  labs(title = "Histograma Agrupado de Ventas por Ano",
        x = "Ventas",
        y = "Frecuencia") +
   theme_minimal()
