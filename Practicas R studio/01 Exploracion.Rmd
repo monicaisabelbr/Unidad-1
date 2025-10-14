@@ -1,6 +1,6 @@
 ---
 title: "Basic Example"
-author: "Ruben Cabrera"
+author: "Mónica Isabel Blanco"
 date: "2025-10-01"
 output: 
   github_document: default
@@ -23,7 +23,7 @@ library(dplyr)
 # Letura de datos
 
 ```{r}
-data_path <- file.path("C:/Users/isabe/OneDrive - Universidad Privada del Valle/4TO SEMESTRE/ESTADÍSTICA IV/Unidad 1/Prácticas R studio/vgsales.csv")
+data_path <- file.path("C:/Users/isabe/OneDrive - Universidad Privada del Valle/4TO SEMESTRE/ESTADISTICA IV/Unidad 1/Practicas R studio/vgsales.csv")
 data.vg.raw <- read.csv(data_path,
                  stringsAsFactors = F,na.strings = ".",header = T,sep=",")
 head(data.vg.raw)
@@ -46,7 +46,7 @@ summary(data.vg)
 ```{r}
 str(data.vg.raw)
 unique(data.vg.raw$Year)
-filter(data.vg.raw, Year =="N/A")
+head(filter(data.vg.raw, Year =="N/A"))
 
 ```
 
@@ -75,7 +75,7 @@ print(round(porcentaje_na, 2))
 
 
 ```{r}
-unique(data.vg$Publisher)
+length(unique(data.vg$Publisher))
 filter(data.vg, Publisher==" ")
 
 ```
@@ -88,26 +88,34 @@ A año le faltan 271 valores (aprox 1,63%). Dado que este porcentajee es muy peq
 # DataFrame de ejemplo con missing values
 
 print("DataFrame original:")
-print(data.vg)
+print(head(data.vg))
 cat("Filas originales:", nrow(data.vg), "\n\n")
 
-# Método 1: na.omit() - Elimina filas con cualquier NA
-df_sin_na <- na.omit(data.vg)
-print("Con na.omit():")
-print(head(df_sin_na))
-cat("Filas después de na.omit():", nrow(df_sin_na), "\n\n")
-
 # Método 2: complete.cases() - Más control
-df_completo <- data.vg[complete.cases(data.vg), ]
+df_sin_na <- data.vg[complete.cases(data.vg), ]
 print("Con complete.cases():")
-print(head(df_completo))
-cat("Filas después de complete.cases():", nrow(df_completo), "\n")
+print(head(df_sin_na))
+cat("Filas después de complete.cases():", nrow(df_sin_na), "\n")
+dim(df_sin_na)
 
 ```
 
 
-# Muestra y Tendencia Central
+```{r}
+summary(df_sin_na$Global_Sales)
+hist(df_sin_na$Global_Sales)
 
+hist(filter(df_sin_na, Global_Sales < 5)$Global_Sales)
+```
+#Muestreo
+```{r}
+set.seed(123)
+N <- dim(df_sin_na)[1]
+indices_muestra <- sample(1:N,200, replace = TRUE);
+data.muestra <- df_sin_na[indices_muestra,]
+summary(data.muestra$Global_Sales)
+```
+# Muestra y Tendencia Central
 ```{r}
 set.seed(123)
 muestra <- sample_n(df_sin_na,300)
@@ -123,12 +131,9 @@ media_other_sales <- mean(muestra$Other_Sales); media_other_sales
 sd_other_sales <- sd(muestra$Other_Sales); sd_other_sales
 media_global_sales <- mean(muestra$Global_Sales) ; media_global_sales
 sd_global_sales <- sd(muestra$Global_Sales); sd_global_sales
-
 ```
 
-Graficos
-
-
+#Graficos
 ```{r}
 
 df <- filter(data.vg,NA_Sales<2.5)
