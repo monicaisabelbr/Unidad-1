@@ -115,6 +115,111 @@ indices_muestra <- sample(1:N,200, replace = TRUE);
 data.muestra <- df_sin_na[indices_muestra,]
 summary(data.muestra$Global_Sales)
 ```
+```{r}
+summary(data.vg$Global_Sales)
+
+```
+```{r}
+dim(filter(data.vg, Global_Sales<2))
+dim(data.vg)
+
+
+dim( filter(data.vg, Global_Sales<2) )[1]  /  dim(data.vg)[1]
+```
+```{r}
+data.vg.pobint <- filter(data.vg, Global_Sales<2)
+summary(data.vg.pobint$Global_Sales)
+```
+```{r}
+set.seed(10)
+N <- dim(data.vg.pobint)[1]
+indices_muestra <- sample(1:N,200,replace = TRUE)
+data.muestra<-data.vg.pobint[indices_muestra, ]
+summary(data.muestra$Global_Sales)
+```
+#Gráficos
+```{r}
+
+df <- data.vg.pobint
+
+# Histograma agrupado por categoría
+ggplot(df , aes(x = Global_Sales) ) + 
+  geom_histogram(alpha = 0.4, bins = 20) + 
+  labs(title = "Histograma de Ventas Globales de la poblacion de interes",
+       x = "Ventas globales",
+       y = "Frecuencia") +
+  theme_minimal()
+```
+```{r}
+df <- data.muestra
+# Histograma agrupado por categoría
+ggplot(df , aes(x = Global_Sales) ) + 
+  geom_histogram(alpha = 0.4, bins = 20) + 
+  labs(title = "Histograma de Ventas Globales de la muestra",
+       x = "Ventas globales",
+       y = "Frecuencia") +
+  theme_minimal()
+```
+
+#Población:
+```{r}
+summary(df)
+```
+#Muestreo
+```{r}
+set.seed(123)
+indices_muestra <- sample(1:5,2,replace = FALSE)
+df[indices_muestra,]
+
+```
+#Frecuencias relativas
+```{r}
+# Calcula la tabla de frecuencias absolutas para la población de interés
+freq_pobint <- table(data.vg.pobint$Global_Sales)
+
+# Calcula la tabla de frecuencias relativas
+freq_rel_pobint <- prop.table(freq_pobint)
+
+# Convierte a un data frame para una mejor visualización (opcional)
+df_freq_rel_pobint <- as.data.frame(freq_rel_pobint)
+colnames(df_freq_rel_pobint) <- c("Ventas_Globales", "Frecuencia_Relativa")
+
+# Muestra las primeras filas de las frecuencias relativas
+head(df_freq_rel_pobint)
+
+# Calcula la tabla de frecuencias absolutas para la muestra
+freq_muestra <- table(data.muestra$Global_Sales)
+
+# Calcula la tabla de frecuencias relativas
+freq_rel_muestra <- prop.table(freq_muestra)
+
+# Convierte a un data frame para una mejor visualización (opcional)
+df_freq_rel_muestra <- as.data.frame(freq_rel_muestra)
+colnames(df_freq_rel_muestra) <- c("Ventas_Globales", "Frecuencia_Relativa")
+
+# Muestra las primeras filas de las frecuencias relativas
+head(df_freq_rel_muestra)
+```
+#Gráfico frecuencias relativas
+
+```{r}
+# Crear data frames con una columna que identifique el origen de los datos
+df_pobint <- data.frame(Global_Sales = data.vg.pobint$Global_Sales, Origen = "Población de Interés")
+df_muestra <- data.frame(Global_Sales = data.muestra$Global_Sales, Origen = "Muestra")
+
+# Combinar ambos data frames en uno solo
+df_combinado <- rbind(df_pobint, df_muestra)
+
+# Crear el histograma combinado usando frecuencias relativas (densidad)
+ggplot(df_combinado, aes(x = Global_Sales, fill = Origen)) +
+  geom_histogram(aes(y = ..density..), alpha = 0.6, position = "identity", bins = 20) +
+  labs(title = "Histograma Combinado de Ventas Globales",
+       x = "Ventas Globales",
+       y = "Densidad (Frecuencia Relativa)") +
+  scale_fill_manual(values = c("Población de Interés" = "skyblue", "Muestra" = "salmon")) +
+  theme_minimal()
+```
+
 # Muestra y Tendencia Central
 ```{r}
 set.seed(123)

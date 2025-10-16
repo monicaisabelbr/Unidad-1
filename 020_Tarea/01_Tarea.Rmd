@@ -1,0 +1,84 @@
+---
+title: "01 Tarea"
+author: "Mónica Isabel Blanco"
+date: "2025-10-16"
+output: 
+  github_document: default
+  html_document: default
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+#Librerias
+```{r librerias}
+library(ggplot2)
+library(dplyr)
+```
+#Lectura de datos
+```{r}
+data <- read.csv("vgsales.csv")
+summary(data)
+```
+#Preparacion de datos
+```{r}
+data.pobint <- data[data$Global_Sales < 2 & data$Global_Sales > 0, ]
+data.pobint$Peso_NA <- data.pobint$NA_Sales / data.pobint$Global_Sales
+summary(data.pobint$Peso_NA)
+
+```
+#Graficos
+```{r grafico_poblacion}
+ggplot(data.pobint, aes(x = Peso_NA)) +
+  geom_histogram(aes(y = ..density..), fill = "navy", alpha = 0.4, bins = 30) +
+  geom_density(color = "red", linewidth = 1) +
+  labs(title = "Distribución del Peso de Ventas de NA (Población de Interés)",
+       x = "Peso de NA (NA_Sales / Global_Sales)",
+       y = "Densidad") +
+  theme_light()
+```
+#Muestreo
+```{r}
+set.seed(123)
+muestra_1 <- sample_n(data.pobint,500)
+set.seed(42)
+muestra_2 <- sample_n(data.pobint, 500)
+
+# Estadísticas básicas de la Muestra 1
+cat("--- Estadísticas de la Muestra 1 ---\n")
+summary(muestra_1$Peso_NA)
+
+# Estadísticas básicas de la Muestra 2
+cat("\n--- Estadísticas de la Muestra 2 ---\n")
+summary(muestra_2$Peso_NA)
+```
+#Comparacion
+```{r}
+data_combinada <- bind_rows(
+  list(Poblacion = data.pobint, Muestra_1 = muestra_1, Muestra_2 = muestra_2),
+  .id = "Origen")
+
+# Grafico de comparacion
+ggplot(data_combinada, aes(x = Peso_NA, fill = Origen, color = Origen)) +
+  geom_density(alpha = 0.4) +
+  scale_fill_manual(values = c("Poblacion" = "gray", "Muestra_1" = "skyblue", "Muestra_2" = "salmon")) +
+  scale_color_manual(values = c("Poblacion" = "black", "Muestra_1" = "blue", "Muestra_2" = "red")) +
+  labs(title = "Comparación de Distribuciones: Población vs. Muestras",
+       x = "Peso de NA",
+       y = "Densidad") +
+  theme_minimal()
+```
+
+
+#Conclusion
+
+1. Al observar las estadísticas descriptivas (`summary`), vemos que la media y la mediana de ambas muestras son extremadamente cercanas a los valores de la población de interés.Esto valida que el muestreo aleatorio es una técnica eficaz para estimar los parámetros poblacionales.
+
+2. El gráfico de densidad comparativo es la prueba visual más fuerte. Las curvas de la Muestra 1 y la Muestra 2 siguen casi perfectamente la forma de la curva de la población. Esto indica que las muestras capturan no solo la tendencia central, sino también la dispersión, la asimetría y la forma general de la distribución poblacional.
+
+3. Al visualizar los gráficos podemos observar que ambas muestras son representativas de la población y se puede hacer una inferencia correcta, ya que los valores estadísticos son similares o bien cercanos a los parámetros. Eso indica que las conclusiones que saquemos a partir de la muestra se pueden aplicar a la población.
+
+
+
